@@ -69,7 +69,6 @@ test('test2', async t => {
     .expect(boxes.count).eql(list.length)
   //check if the list devices div is exactly 700px
     .expect(listDeviceWidth).eql('700px')
-  //
   for(let i=0; i<boxes.count; i++){
     await t
       .expect(boxesCSSProps[i].height).eql('70px')

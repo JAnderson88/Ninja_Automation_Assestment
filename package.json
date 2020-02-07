@@ -1,0 +1,23 @@
+{
+  "name": "ninjatestcafeassesment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getAPIDeviceList.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JAnderson88/Ninja_Automation_Assestment.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JAnderson88/Ninja_Automation_Assestment/issues"
+  },
+  "homepage": "https://github.com/JAnderson88/Ninja_Automation_Assestment#readme",
+  "devDependencies": {
+    "node-fetch": "^2.6.0",
+    "testcafe": "^1.8.1"
+  }
+}
