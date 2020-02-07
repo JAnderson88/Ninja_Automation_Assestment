@@ -1,4 +1,4 @@
-import { Selector } from 'testcafe';
+import { Selector, ClientFunction } from 'testcafe';
 import getAPIDeviceList from './getAPIDeviceList';
 
 const url = 'http://localhost:3001';
@@ -24,6 +24,7 @@ test('test1', async t => {
 });
 
 test('test2', async t => {
+  //Selectors
   let list = await getAPIDeviceList();
   let boxes = await Selector('.device-main-box');
   let listDevice = await Selector('.list-devices');
@@ -32,7 +33,7 @@ test('test2', async t => {
   let names = await Selector('.device-name');
   let types = await Selector('.device-type');
   let capacities = await Selector('.device-capacity');
-
+  //Variables
   const listDeviceWidth = listDevice.getStyleProperty('width')
   const boxesCSSProps = [];
   const deviceInfoProps = [];
@@ -90,4 +91,38 @@ test('test2', async t => {
       .expect(types.nth(i).visible).ok()
       .expect(capacities.nth(i).visible).ok()
   }
+})
+
+test('test3', async t => {
+  let deviceEditFirst = await Selector('.device-edit').nth(0);
+  await t
+    .click(deviceEditFirst)
+  
+  let systemName = await Selector('#system_name')
+  let submitButton = await Selector('.submitButton')
+  await t
+    .typeText(systemName, 'Renamed_Device', {replace: true})
+    .click(submitButton)
+    .eval(() => location.reload(true));
+
+  let names = await Selector('.device-name');
+  await t
+    .expect(names.nth(0).withText('Renamed_Device')).ok()
+})
+
+test('test4', async t => {
+  let list = await getAPIDeviceList();
+  let deviceRemoveButton = await Selector('.device-remove');
+  // let finalDeviceNameElement = await Selector('.device-name').nth(9);
+  let finalDeviceName = list[9].system_name
+  console.log(await finalDeviceName)
+
+  await t
+    .click(deviceRemoveButton.nth(9))
+    .eval(() => location.reload(true));
+
+  let devices = await Selector('.device-name')
+  await t
+    .expect(devices.withText(finalDeviceName).exists).notOk(false)
+    .expect(devices.withText(finalDeviceName).visible).notOk(false)
 })
