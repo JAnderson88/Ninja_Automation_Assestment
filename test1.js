@@ -1,27 +1,28 @@
 import { Selector, ClientFunction } from 'testcafe';
 import getAPIDeviceList from './getAPIDeviceList';
+import APICalls from './APICalls';
 
 const url = 'http://localhost:3001';
 
 fixture('test1')
   .page(url)
 
-test('test1', async t => {
-  let list = await getAPIDeviceList();
-  let boxes = await Selector('.device-options');
-  let names = await Selector('.device-name');
-  let types = await Selector('.device-type');
-  let capacities = await Selector('.device-capacity');
-  for (let i = 0; i < list.length; i++) {
-    const { system_name, type, hdd_capacity } = list[i];
-    await t
-      .expect(names.nth(i).withText(system_name)).ok()
-      .expect(types.nth(i).withText(type)).ok()
-      .expect(capacities.nth(i).withText(hdd_capacity)).ok()
-      .expect(boxes.nth(i).find('a').visible).ok()
-      .expect(boxes.nth(i).find('button').visible).ok()
-  }
-});
+// test('test1', async t => {
+//   let list = await APICalls.getDevices();
+//   let boxes = await Selector('.device-options');
+//   let names = await Selector('.device-name');
+//   let types = await Selector('.device-type');
+//   let capacities = await Selector('.device-capacity');
+//   for (let i = 0; i < list.length; i++) {
+//     const { system_name, type, hdd_capacity } = list[i];
+//     await t
+//       .expect(names.nth(i).withText(system_name)).ok()
+//       .expect(types.nth(i).withText(type)).ok()
+//       .expect(capacities.nth(i).withText(hdd_capacity)).ok()
+//       .expect(boxes.nth(i).find('a').visible).ok()
+//       .expect(boxes.nth(i).find('button').visible).ok()
+//   }
+// });
 
 test('test2', async t => {
   //Selectors
@@ -93,32 +94,33 @@ test('test2', async t => {
 })
 
 test('test3', async t => {
-  let deviceEditFirst = await Selector('.device-edit').nth(0);
-  await t
-    .click(deviceEditFirst)
-  
-  let systemName = await Selector('#system_name')
-  let submitButton = await Selector('.submitButton')
-  await t
-    .typeText(systemName, 'Renamed_Device', {replace: true})
-    .click(submitButton)
-    .eval(() => location.reload(true));
-
+  let oldAPIList = await APICalls.getDevices();
   let names = await Selector('.device-name');
+  let firstUIDeviceType = await Selector('.device-type').nth(0);
+  let firstUIDeviceCapacity = await Selector('.device-capacity').nth(0);
+
+  let firstUIDeviceTypeSnapshot = await firstUIDeviceType();
+  let firstUIDeviceCapacitySnapshot = await firstUIDeviceCapacity();
+  
+  if(firstUIDeviceTypeSnapshot.textContent === oldAPIList[0].type && firstUIDeviceCapacitySnapshot.textContent.substring(0,2) === oldAPIList[0].hdd_capacity) {
+    await APICalls.updateDevices(oldAPIList[0].id, 'Renamed_Device', firstUIDeviceTypeSnapshot.textContent, firstUIDeviceCapacitySnapshot.textContent)
+  }
   await t
+    .eval(() => location.reload(true))
     .expect(names.nth(0).withText('Renamed_Device')).ok()
 })
 
 test('test4', async t => {
-  let list = await getAPIDeviceList();
-  let deviceRemoveButton = await Selector('.device-remove');
-  let finalDeviceName = list[9].system_name
+  let devices = Selector('.device-name')
+  let oldAPIList = await APICalls.getDevices();
+  let oldAPIListlength = await oldAPIList.length
+  let finalDeviceName = oldAPIList[oldAPIListlength - 1].system_name
+
+  await APICalls.deleteDevice(oldAPIListlength-1)
 
   await t
-    .click(deviceRemoveButton.nth(9))
     .eval(() => location.reload(true));
 
-  let devices = await Selector('.device-name')
   if(await !devices.withText(finalDeviceName).exists && await !devices.withText(finalDeviceName).visble){
     return true
   }
