@@ -8,19 +8,30 @@ fixture('test1')
   .page(url)
 
 test('test1', async t => {
-  let list = await APICalls.getDevices();
-  let boxes = await Selector('.device-options');
-  let names = await Selector('.device-name');
-  let types = await Selector('.device-type');
-  let capacities = await Selector('.device-capacity');
-  for (let i = 0; i < list.length; i++) {
-    const { system_name, type, hdd_capacity } = list[i];
+  const sortedAPIList = [];
+  let APIList = await APICalls.getDevices();
+  let deviceOptionsBoxes = await Selector('.device-options');
+  let deviceNames = await Selector('.device-name');
+  let deviceTypes = await Selector('.device-type');
+  let deviceCapacities = await Selector('.device-capacity');
+
+  for(let i=0; i<await deviceNames.count; i++){
+    const currentSnapshot = await deviceNames.nth(i)();
+    for(let j=0; j<await APIList.length; j++){
+      if(currentSnapshot.textContent === APIList[j].system_name){
+        sortedAPIList.push(APIList[j])
+        break;
+      }
+    }
+  }
+  for (let i = 0; i < APIList.length; i++) {
+    const { system_name, type, hdd_capacity } = sortedAPIList[i];
     await t
-      .expect(names.nth(i).withText(system_name)).ok()
-      .expect(types.nth(i).withText(type)).ok()
-      .expect(capacities.nth(i).withText(hdd_capacity)).ok()
-      .expect(boxes.nth(i).find('a').visible).ok()
-      .expect(boxes.nth(i).find('button').visible).ok()
+      .expect(deviceNames.nth(i).withText(system_name).visible).ok()
+      .expect(deviceTypes.nth(i).withText(type).visible).ok()
+      .expect(deviceCapacities.nth(i).withText(hdd_capacity).visible).ok()
+      .expect(deviceOptionsBoxes.nth(i).find('a').visible).ok()
+      .expect(deviceOptionsBoxes.nth(i).find('button').visible).ok()
   }
 });
 
@@ -107,6 +118,7 @@ test('test3', async t => {
   }
   await t
     .eval(() => location.reload(true))
+  await t
     .expect(names.nth(0).withText('Renamed_Device')).ok()
 })
 
