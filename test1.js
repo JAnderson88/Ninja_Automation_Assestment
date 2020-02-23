@@ -1,5 +1,4 @@
-import { Selector, ClientFunction } from 'testcafe';
-import getAPIDeviceList from './getAPIDeviceList';
+import { Selector } from 'testcafe';
 import APICalls from './APICalls';
 
 const url = 'http://localhost:3001';
@@ -7,24 +6,26 @@ const url = 'http://localhost:3001';
 fixture('test1')
   .page(url)
 
-test('test1', async t => {
-  const sortedAPIList = [];
-  let APIList = await APICalls.getDevices();
+test('Check if API List is sorted and visible', async t => {
+  let APIDeviceList = await APICalls.getDevices();
   let deviceOptionsBoxes = await Selector('.device-options');
   let deviceNames = await Selector('.device-name');
   let deviceTypes = await Selector('.device-type');
   let deviceCapacities = await Selector('.device-capacity');
-
+  
+  const sortedAPIList = []
+  
   for(let i=0; i<await deviceNames.count; i++){
     const currentSnapshot = await deviceNames.nth(i)();
-    for(let j=0; j<await APIList.length; j++){
-      if(currentSnapshot.textContent === APIList[j].system_name){
-        sortedAPIList.push(APIList[j])
+    for(let j=0; j<await APIDeviceList.length; j++){
+      if(currentSnapshot.textContent === APIDeviceList[j].system_name){
+        sortedAPIList.push(APIDeviceList[j])
         break;
       }
     }
   }
-  for (let i = 0; i < APIList.length; i++) {
+
+  for (let i = 0; i < await sortedAPIList.length; i++) {
     const { system_name, type, hdd_capacity } = sortedAPIList[i];
     await t
       .expect(deviceNames.nth(i).withText(system_name).visible).ok()
@@ -35,9 +36,9 @@ test('test1', async t => {
   }
 });
 
-test('test2', async t => {
+test('Check if UI is being displayed properly', async t => {
   //Selectors
-  let list = await getAPIDeviceList();
+  let APIDevicelist = await getAPIDeviceList();
   let boxes = await Selector('.device-main-box');
   let listDevice = await Selector('.list-devices');
   let deviceInfoDiv = await Selector('.device-info');
@@ -104,7 +105,7 @@ test('test2', async t => {
   }
 })
 
-test('test3', async t => {
+test('Test update route and change the first devices name', async t => {
   let oldAPIList = await APICalls.getDevices();
   let names = await Selector('.device-name');
   let firstUIDeviceType = await Selector('.device-type').nth(0);
@@ -122,7 +123,7 @@ test('test3', async t => {
     .expect(names.nth(0).withText('Renamed_Device')).ok()
 })
 
-test('test4', async t => {
+test('Test delete route and delete the last device in the list', async t => {
   let devices = Selector('.device-name')
   let oldAPIList = await APICalls.getDevices();
   let oldAPIListlength = await oldAPIList.length
