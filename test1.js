@@ -6,63 +6,63 @@ const url = 'http://localhost:3001';
 fixture('test1')
   .page(url)
 
-test('Check if API List is sorted and visible', async t => {
-  let APIDeviceList = await APICalls.getDevices();
-  let deviceOptionsBoxes = await Selector('.device-options');
-  let deviceNames = await Selector('.device-name');
-  let deviceTypes = await Selector('.device-type');
-  let deviceCapacities = await Selector('.device-capacity');
+// test('Check if API List is sorted and visible', async t => {
+//   let APIDeviceList = await APICalls.getDevices();
+//   let deviceOptionsBoxes = await Selector('.device-options');
+//   let deviceNames = await Selector('.device-name');
+//   let deviceTypes = await Selector('.device-type');
+//   let deviceCapacities = await Selector('.device-capacity');
   
-  const sortedAPIList = []
+//   const sortedAPIList = []
   
-  for(let i=0; i<await deviceNames.count; i++){
-    const currentSnapshot = await deviceNames.nth(i)();
-    for(let j=0; j<await APIDeviceList.length; j++){
-      if(currentSnapshot.textContent === APIDeviceList[j].system_name){
-        sortedAPIList.push(APIDeviceList[j])
-        break;
-      }
-    }
-  }
+//   for(let i=0; i<await deviceNames.count; i++){
+//     const currentSnapshot = await deviceNames.nth(i)();
+//     for(let j=0; j<await APIDeviceList.length; j++){
+//       if(currentSnapshot.textContent === APIDeviceList[j].system_name){
+//         sortedAPIList.push(APIDeviceList[j])
+//         break;
+//       }
+//     }
+//   }
 
-  for (let i = 0; i < await sortedAPIList.length; i++) {
-    const { system_name, type, hdd_capacity } = sortedAPIList[i];
-    await t
-      .expect(deviceNames.nth(i).withText(system_name).visible).ok()
-      .expect(deviceTypes.nth(i).withText(type).visible).ok()
-      .expect(deviceCapacities.nth(i).withText(hdd_capacity).visible).ok()
-      .expect(deviceOptionsBoxes.nth(i).find('a').visible).ok()
-      .expect(deviceOptionsBoxes.nth(i).find('button').visible).ok()
-  }
-});
+//   for (let i = 0; i < await sortedAPIList.length; i++) {
+//     const { system_name, type, hdd_capacity } = sortedAPIList[i];
+//     await t
+//       .expect(deviceNames.nth(i).withText(system_name).visible).ok()
+//       .expect(deviceTypes.nth(i).withText(type).visible).ok()
+//       .expect(deviceCapacities.nth(i).withText(hdd_capacity).visible).ok()
+//       .expect(deviceOptionsBoxes.nth(i).find('a').visible).ok()
+//       .expect(deviceOptionsBoxes.nth(i).find('button').visible).ok()
+//   }
+// });
 
 test('Check if UI is being displayed properly', async t => {
   //Selectors
-  let APIDevicelist = await getAPIDeviceList();
-  let boxes = await Selector('.device-main-box');
+  let APIDeviceList = await APICalls.getDevices();
+  let deviceMainBoxes = await Selector('.device-main-box');
   let listDevice = await Selector('.list-devices');
   let deviceInfoDiv = await Selector('.device-info');
   let deviceOptionsDiv = await Selector('.device-options');
-  let names = await Selector('.device-name');
-  let types = await Selector('.device-type');
-  let capacities = await Selector('.device-capacity');
+  let deviceNames = await Selector('.device-name');
+  let deviceTypes = await Selector('.device-type');
+  let deviceCapacities = await Selector('.device-capacity');
   //Variables
   const listDeviceWidth = listDevice.getStyleProperty('width')
   const boxesCSSProps = [];
   const deviceInfoProps = [];
   const deviceOptionsProps = [];
 
-  for(let i=0; i<boxes.count; i++){
+  for(let i=0; i<deviceMainBoxes.count; i++){
     boxesCSSProps[i] = {}
     deviceInfoProps[i] = {}
     deviceOptionsProps[i] = {}
 
-    boxesCSSProps[i].height = boxes.nth(i).getStyleProperty('height');
-    boxesCSSProps[i].padding = boxes.nth(i).getStyleProperty('padding');
-    boxesCSSProps[i].margin = boxes.nth(i).getStyleProperty('margin');
-    boxesCSSProps[i].display = boxes.nth(i).getStyleProperty('display');
-    boxesCSSProps[i].alignItems = boxes.nth(i).getStyleProperty('align-items');
-    boxesCSSProps[i].justifyContent = boxes.nth(i).getStyleProperty('justify-content');
+    boxesCSSProps[i].height = deviceMainBoxes.nth(i).getStyleProperty('height');
+    boxesCSSProps[i].padding = deviceMainBoxes.nth(i).getStyleProperty('padding');
+    boxesCSSProps[i].margin = deviceMainBoxes.nth(i).getStyleProperty('margin');
+    boxesCSSProps[i].display = deviceMainBoxes.nth(i).getStyleProperty('display');
+    boxesCSSProps[i].alignItems = deviceMainBoxes.nth(i).getStyleProperty('align-items');
+    boxesCSSProps[i].justifyContent = deviceMainBoxes.nth(i).getStyleProperty('justify-content');
 
     deviceInfoProps[i].display = deviceInfoDiv.nth(i).getStyleProperty('display');
     deviceInfoProps[i].flex = deviceInfoDiv.nth(i).getStyleProperty('flex');
@@ -79,10 +79,10 @@ test('Check if UI is being displayed properly', async t => {
 
   await t
   //check if list is the same size as the devices options list
-    .expect(boxes.count).eql(list.length)
+    .expect(deviceMainBoxes.count).eql(APIDeviceList.length)
   //check if the list devices div is exactly 700px
     .expect(listDeviceWidth).eql('700px')
-  for(let i=0; i<boxes.count; i++){
+  for(let i=0; i<deviceMainBoxes.count; i++){
     await t
       .expect(boxesCSSProps[i].height).eql('70px')
       .expect(boxesCSSProps[i].padding).eql('5px 10px')
@@ -99,15 +99,15 @@ test('Check if UI is being displayed properly', async t => {
       .expect(deviceInfoProps[i].fontWeight).eql('bold')
       .expect(deviceOptionsProps[i].textAlign).eql('right')
       .expect(deviceOptionsProps[i].flex).eql('2 1')
-      .expect(names.nth(i).visible).ok()
-      .expect(types.nth(i).visible).ok()
-      .expect(capacities.nth(i).visible).ok()
+      .expect(deviceNames.nth(i).visible).ok()
+      .expect(deviceTypes.nth(i).visible).ok()
+      .expect(deviceCapacities.nth(i).visible).ok()
   }
 })
 
 test('Test update route and change the first devices name', async t => {
   let oldAPIList = await APICalls.getDevices();
-  let names = await Selector('.device-name');
+  let deviceNames = await Selector('.device-name');
   let firstUIDeviceType = await Selector('.device-type').nth(0);
   let firstUIDeviceCapacity = await Selector('.device-capacity').nth(0);
 
@@ -120,11 +120,11 @@ test('Test update route and change the first devices name', async t => {
   await t
     .eval(() => location.reload(true))
   await t
-    .expect(names.nth(0).withText('Renamed_Device')).ok()
+    .expect(deviceNames.nth(0).withText('Renamed_Device')).ok()
 })
 
 test('Test delete route and delete the last device in the list', async t => {
-  let devices = Selector('.device-name')
+  let deviceNames = Selector('.device-name')
   let oldAPIList = await APICalls.getDevices();
   let oldAPIListlength = await oldAPIList.length
   let finalDeviceName = oldAPIList[oldAPIListlength - 1].system_name
@@ -134,7 +134,7 @@ test('Test delete route and delete the last device in the list', async t => {
   await t
     .eval(() => location.reload(true));
 
-  if(await !devices.withText(finalDeviceName).exists && await !devices.withText(finalDeviceName).visble){
+  if(await !deviceNames.withText(finalDeviceName).exists && await !deviceNames.withText(finalDeviceName).visble){
     return true
   }
 })
