@@ -6,35 +6,35 @@ const url = 'http://localhost:3001';
 fixture('test1')
   .page(url)
 
-// test('Check if API List is sorted and visible', async t => {
-//   let APIDeviceList = await APICalls.getDevices();
-//   let deviceOptionsBoxes = await Selector('.device-options');
-//   let deviceNames = await Selector('.device-name');
-//   let deviceTypes = await Selector('.device-type');
-//   let deviceCapacities = await Selector('.device-capacity');
+test('Check if API List is sorted and visible', async t => {
+  let APIDeviceList = await APICalls.getDevices();
+  let deviceOptionsBoxes = await Selector('.device-options');
+  let deviceNames = await Selector('.device-name');
+  let deviceTypes = await Selector('.device-type');
+  let deviceCapacities = await Selector('.device-capacity');
   
-//   const sortedAPIList = []
+  const sortedAPIList = []
   
-//   for(let i=0; i<await deviceNames.count; i++){
-//     const currentSnapshot = await deviceNames.nth(i)();
-//     for(let j=0; j<await APIDeviceList.length; j++){
-//       if(currentSnapshot.textContent === APIDeviceList[j].system_name){
-//         sortedAPIList.push(APIDeviceList[j])
-//         break;
-//       }
-//     }
-//   }
+  for(let i=0; i<await deviceNames.count; i++){
+    const currentSnapshot = await deviceNames.nth(i)();
+    for(let j=0; j<await APIDeviceList.length; j++){
+      if(currentSnapshot.textContent === APIDeviceList[j].system_name){
+        sortedAPIList.push(APIDeviceList[j])
+        break;
+      }
+    }
+  }
 
-//   for (let i = 0; i < await sortedAPIList.length; i++) {
-//     const { system_name, type, hdd_capacity } = sortedAPIList[i];
-//     await t
-//       .expect(deviceNames.nth(i).withText(system_name).visible).ok()
-//       .expect(deviceTypes.nth(i).withText(type).visible).ok()
-//       .expect(deviceCapacities.nth(i).withText(hdd_capacity).visible).ok()
-//       .expect(deviceOptionsBoxes.nth(i).find('a').visible).ok()
-//       .expect(deviceOptionsBoxes.nth(i).find('button').visible).ok()
-//   }
-// });
+  for (let i = 0; i < await sortedAPIList.length; i++) {
+    const { system_name, type, hdd_capacity } = sortedAPIList[i];
+    await t
+      .expect(deviceNames.nth(i).withText(system_name).visible).ok()
+      .expect(deviceTypes.nth(i).withText(type).visible).ok()
+      .expect(deviceCapacities.nth(i).withText(hdd_capacity).visible).ok()
+      .expect(deviceOptionsBoxes.nth(i).find('a').visible).ok()
+      .expect(deviceOptionsBoxes.nth(i).find('button').visible).ok()
+  }
+});
 
 test('Check if UI is being displayed properly', async t => {
   //Selectors
